@@ -1,3 +1,25 @@
+const observer = new MutationObserver((mutations)=>{
+    //console.log(mutations);
+    for(mutation of mutations){
+        if(mutation.type === 'childList' && mutation.addedNodes){
+            console.log($(mutation.addedNodes));
+            $(mutation.addedNodes).not('*[contenteditable="false"]')
+            .on('input', (e)=>{
+                console.log(mutation.target);
+                typeHandler(e);
+            });
+        }
+    }
+});
+
+const config = { 
+	attributes: false, 
+	childList: true, 
+	characterData: false 
+};
+
+observer.observe($('#textArea')[0], config);
+
 rangy.init();
 
 let spanHighlighter = rangy.createHighlighter();
@@ -135,16 +157,12 @@ function getCaretCharacterOffsetWithin(element) {
     }
     return -1;
   }
-function addHandler(){
+
     $('#textArea, #textArea *').not('[contenteditable="false"]')
-    .off('input')
     .on('input', (e)=>{
-        console.log(1000);
-        addHandler();
         typeHandler(e);
     });
-}
-addHandler();
+
 
 function typeHandler(e){
 
@@ -153,7 +171,7 @@ function typeHandler(e){
         e.stopPropagation();
         const cursorPos = getCaretCharacterOffsetWithin(e.target);
         let currText = e.target.innerText;
-        console.log(e.target);
+        console.log(e);
         let prevText = currText.slice(0, cursorPos);
         
         console.log(cursorPos);
